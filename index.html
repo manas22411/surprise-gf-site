@@ -394,7 +394,52 @@
   <div class="bg">
     <div class="blob b1"></div>
     <div class="blob b2"></div>
+    <!-- Animated background images -->
+    <div class="bg-photo" id="bgPhoto1" style="background-image:url('images/onmyback.jpeg');"></div>
+    <div class="bg-photo" id="bgPhoto2" style="background-image:url('images/kurta.jpeg');"></div>
+    <div class="bg-sorry-text">I am sorry</div>
   </div>
+  <style>
+    .bg-photo {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-size: cover;
+      background-position: center;
+      opacity: 0.13;
+      z-index: 0;
+      animation: bgPhotoAnim 12s infinite alternate;
+      pointer-events: none;
+    }
+    #bgPhoto1 {
+      animation-delay: 0s;
+    }
+    #bgPhoto2 {
+      animation-delay: 6s;
+    }
+    @keyframes bgPhotoAnim {
+      0% { opacity: 0.13; filter: blur(2px) brightness(1.1); transform: scale(1) translateY(0); }
+      50% { opacity: 0.19; filter: blur(0.5px) brightness(1.18); transform: scale(1.04) translateY(-12px); }
+      100% { opacity: 0.13; filter: blur(2px) brightness(1.1); transform: scale(1) translateY(0); }
+    }
+    .bg-sorry-text {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 2.8rem;
+      color: #ff4d7d;
+      font-weight: 900;
+      opacity: 0.22;
+      z-index: 1;
+      pointer-events: none;
+      text-shadow: 0 2px 24px #fff6f8, 0 0 32px #ff4d7d;
+      letter-spacing: 0.04em;
+      font-family: inherit;
+      user-select: none;
+    }
+  </style>
 
   <!-- Big romantic overlay (optional visual) -->
   <div id="romance" class="romance" aria-hidden="true">
@@ -404,6 +449,15 @@
     <div class="sparkle" style="left:50%;top:58%;animation-delay:0.9s">✨</div>
     <div class="sparkle" style="left:60%;top:38%;animation-delay:1.2s">✨</div>
     <div class="sparkle" style="left:40%;top:48%;animation-delay:1.6s">✨</div>
+  </div>
+
+  <!-- Extra romance image modal -->
+  <div id="romanceImageModal" class="photoOverlay" role="dialog" aria-modal="true" aria-label="Romantic Photo" style="z-index:400;">
+    <div class="photoCard" style="max-width:520px;">
+      <button class="close" id="closeRomanceImageModal" aria-label="Close" style="z-index:2; position:absolute; right:10px; top:10px; pointer-events:auto; background:rgba(255,214,226,0.55); color:var(--accent); font-size:1.4rem; font-weight:900; cursor:pointer; width:42px; height:42px; border-radius:14px; display:grid; place-items:center; border:none;">&times;</button>
+      <img src="images/more_romantic.jpeg" alt="Romantic moment" style="width:100%; max-height:62vh; object-fit:cover; border-radius:14px; box-shadow:0 14px 26px rgba(0,0,0,0.12);">
+      <div class="caption">A beautiful memory together 💖</div>
+    </div>
   </div>
 
   <main class="wrap">
@@ -440,7 +494,7 @@
         <p class="tiny">(Try to click Reject — it’s shy 😉)</p>
 
         <div class="choices" id="choiceArea">
-          <button id="acceptBtn" class="btn btn-primary" type="button">Accept Apologies</button>
+          <button id="acceptBtn" class="btn btn-primary" type="button">Accept Apologies & continue</button>
           <button id="rejectBtn" class="btn btn-ghost" type="button" aria-label="Reject">Reject</button>
         </div>
       </section>
@@ -474,9 +528,20 @@
   <div id="photoModal" class="photoOverlay" role="dialog" aria-modal="true" aria-label="Photo">
     <div class="photoCard">
       <button class="close" id="closePhotoModal" aria-label="Close">&times;</button>
-      <!-- ✅ Put your image path here -->
       <img src="images/pic1-maar.jpeg" alt="Photo" />
       <div class="caption">I love you 💖</div>
+    </div>
+  </div>
+
+  <!-- Video modal -->
+  <div id="videoModal" class="photoOverlay" role="dialog" aria-modal="true" aria-label="Video" style="z-index:350;">
+    <div class="photoCard" style="max-width:640px; position:relative;">
+      <button class="close" id="closeVideoModal" aria-label="Close" style="z-index:2; position:absolute; right:10px; top:10px; pointer-events:auto; background:rgba(255,214,226,0.55); color:var(--accent); font-size:1.4rem; font-weight:900; cursor:pointer; width:42px; height:42px; border-radius:14px; display:grid; place-items:center; border:none;">&times;</button>
+      <video id="celebrateVideo" width="100%" controls style="border-radius:14px;box-shadow:0 14px 26px rgba(0,0,0,0.12);max-height:62vh;background:#000; margin-top:48px;">
+        <source src="video/maar_video.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+      </video>
+      <div class="caption">A special moment for us 🎥</div>
     </div>
   </div>
 
@@ -523,9 +588,15 @@
     const celebrateBtn = document.getElementById('celebrateBtn');
     const rejectMsgBtn = document.getElementById('rejectMsgBtn');
 
-    const openPhotoBtn = document.getElementById('openPhotoBtn');
-    const photoModal = document.getElementById('photoModal');
-    const closePhotoModal = document.getElementById('closePhotoModal');
+
+  const openPhotoBtn = document.getElementById('openPhotoBtn');
+  const photoModal = document.getElementById('photoModal');
+  const closePhotoModal = document.getElementById('closePhotoModal');
+
+  // Video modal elements
+  const videoModal = document.getElementById('videoModal');
+  const closeVideoModal = document.getElementById('closeVideoModal');
+  const celebrateVideo = document.getElementById('celebrateVideo');
 
     const romance = document.getElementById('romance');
     const toggleRomanceBtn = document.getElementById('toggleRomanceBtn');
@@ -597,8 +668,26 @@
     // Celebrate inside overlay
     celebrateBtn.addEventListener('click', () => {
       smallConfettiBurst(50, 38);
-      romance.classList.add('show');
-      setTimeout(() => romance.classList.remove('show'), 2200);
+      // Show video modal and play video
+      videoModal.classList.add('show');
+      setBodyScrollLocked(true);
+      if (celebrateVideo) {
+        celebrateVideo.currentTime = 0;
+        celebrateVideo.play();
+      }
+    });
+    // Video modal close logic
+    function closeVideo() {
+      videoModal.classList.remove('show');
+      setBodyScrollLocked(false);
+      if (celebrateVideo) {
+        celebrateVideo.pause();
+        celebrateVideo.currentTime = 0;
+      }
+    }
+    closeVideoModal.addEventListener('click', closeVideo);
+    videoModal.addEventListener('click', (e) => {
+      if (e.target === videoModal) closeVideo();
     });
 
     // Shy reject in overlay
@@ -660,9 +749,21 @@
     });
 
     // ---------- Extra romance toggle ----------
+    const romanceImageModal = document.getElementById('romanceImageModal');
+    const closeRomanceImageModal = document.getElementById('closeRomanceImageModal');
+
     toggleRomanceBtn.addEventListener('click', () => {
-      romance.classList.add('show');
-      setTimeout(() => romance.classList.remove('show'), 2200);
+      romanceImageModal.classList.add('show');
+      setBodyScrollLocked(true);
+    });
+
+    function closeRomanceImage() {
+      romanceImageModal.classList.remove('show');
+      setBodyScrollLocked(false);
+    }
+    closeRomanceImageModal.addEventListener('click', closeRomanceImage);
+    romanceImageModal.addEventListener('click', (e) => {
+      if (e.target === romanceImageModal) closeRomanceImage();
     });
 
     // ---------- ESC to close modals ----------
@@ -670,6 +771,8 @@
       if (e.key === 'Escape') {
         if (photoModal.classList.contains('show')) closePhoto();
         if (apologyOverlay.classList.contains('show')) closeApology();
+        if (videoModal.classList.contains('show')) closeVideo();
+        if (romanceImageModal.classList.contains('show')) closeRomanceImage();
       }
     });
   </script>
