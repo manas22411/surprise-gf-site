@@ -394,10 +394,6 @@
   <div class="bg">
     <div class="blob b1"></div>
     <div class="blob b2"></div>
-    <!-- Animated background images -->
-    <div class="bg-photo" id="bgPhoto1" style="background-image:url('images/onmyback.jpeg');"></div>
-    <div class="bg-photo" id="bgPhoto2" style="background-image:url('images/kurta.jpeg');"></div>
-    <div class="bg-sorry-text">I am sorry</div>
   </div>
   <style>
     .bg-photo {
@@ -461,7 +457,42 @@
   </div>
 
   <main class="wrap">
-    <section class="card">
+    <section class="card" style="position:relative; overflow:hidden;">
+      <!-- Decorative overlapping photos -->
+      <img src="images/shimla.jpeg" alt="Shimla memory" class="card-overlap-photo left" />
+      <img src="images/first.jpeg" alt="First memory" class="card-overlap-photo right" />
+      <!-- Animated background images inside card -->
+      <div class="card-bg-photo" id="cardBgPhoto1"></div>
+      <div class="card-bg-photo" id="cardBgPhoto2"></div>
+      <div class="card-bg-sorry-text">I am sorry</div>
+  <style>
+    .card-overlap-photo {
+      position: absolute;
+      top: 18px;
+      width: 110px;
+      height: 160px;
+      object-fit: cover;
+      border-radius: 18px;
+      box-shadow: 0 8px 32px rgba(255,77,125,0.18), 0 2px 18px #fff6f8;
+      opacity: 0.82;
+      z-index: 3;
+      transition: transform 0.4s cubic-bezier(.2,.8,.2,1), box-shadow 0.3s;
+      border: 2.5px solid #fff6f8;
+    }
+    .card-overlap-photo.left {
+      left: -54px;
+      transform: rotate(-7deg);
+    }
+    .card-overlap-photo.right {
+      right: -54px;
+      transform: rotate(8deg);
+    }
+    .card-overlap-photo:hover {
+      opacity: 1;
+      box-shadow: 0 12px 40px rgba(255,77,125,0.28), 0 2px 18px #fff6f8;
+      transform: scale(1.04) rotate(0deg);
+    }
+  </style>
       <div class="hearts" aria-hidden="true">
         <span style="left:8%; top:75%; animation-delay:0s;">❤️</span>
         <span style="left:22%; top:85%; animation-delay:1.2s;">💖</span>
@@ -469,6 +500,54 @@
         <span style="left:70%; top:88%; animation-delay:3.0s;">💗</span>
         <span style="left:84%; top:80%; animation-delay:4.1s;">💞</span>
       </div>
+  <style>
+    .card-bg-photo {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      background-size: cover;
+      background-position: center;
+      opacity: 0.22;
+      z-index: 0;
+      animation: cardBgPhotoAnim 12s infinite alternate;
+      pointer-events: none;
+      filter: blur(1.5px) brightness(1.08);
+    }
+    #cardBgPhoto1 {
+      background-image: url('images/onmyback.jpeg');
+      animation-delay: 0s;
+    }
+    #cardBgPhoto2 {
+      background-image: url('images/kurta.jpeg');
+      animation-delay: 6s;
+    }
+    @keyframes cardBgPhotoAnim {
+      0% { opacity: 0.22; filter: blur(1.5px) brightness(1.08); transform: scale(1) translateY(0); }
+      50% { opacity: 0.32; filter: blur(0.5px) brightness(1.15); transform: scale(1.04) translateY(-10px); }
+      100% { opacity: 0.22; filter: blur(1.5px) brightness(1.08); transform: scale(1) translateY(0); }
+    }
+    .card-bg-sorry-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 2.2rem;
+      color: #ff4d7d;
+      font-weight: 900;
+      opacity: 0.32;
+      z-index: 1;
+      pointer-events: none;
+      text-shadow: 0 2px 24px #fff6f8, 0 0 32px #ff4d7d;
+      letter-spacing: 0.04em;
+      font-family: inherit;
+      user-select: none;
+    }
+    .card > *:not(.card-bg-photo):not(.card-bg-sorry-text) {
+      position: relative;
+      z-index: 2;
+    }
+  </style>
 
       <h1 class="title">Hey, beautiful ❤️</h1>
       <div class="pill">A tiny surprise, made with love ✨</div>
