@@ -96,8 +96,9 @@
       transition: background 0.6s;
     }
     .card {
-      max-width: 420px;
-      width: 100%;
+      max-width: 1100px;
+      width: 80vw;
+      min-width: 320px;
       padding: 38px 32px 28px 32px;
       border-radius: 22px;
       background: var(--card);
@@ -107,6 +108,53 @@
       overflow: hidden;
       border: 1.5px solid var(--accent3);
       animation: fadeInCard 1.2s cubic-bezier(.2,.8,.2,1);
+    }
+    .apology-message {
+      /* ...existing styles... */
+      min-width: 320px;
+      max-width: 700px;
+      width: 80vw;
+    }
+    .apology-message .msg-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+      margin-top: 28px;
+    }
+    .celebrate-btn {
+      font-size: 1.1rem;
+      padding: 14px 32px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #ff6b88 0%, #ffb6c1 100%);
+      color: white;
+      font-weight: 700;
+      border: none;
+      box-shadow: 0 2px 18px #ffb6c1;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.2s;
+      animation: pulseCelebrate 1.2s infinite alternate;
+    }
+    @keyframes pulseCelebrate {
+      0% { box-shadow: 0 2px 18px #ffb6c1; transform: scale(1); }
+      100% { box-shadow: 0 6px 32px #ffb6c1; transform: scale(1.08); }
+    }
+    .reject-btn {
+      font-size: 1.1rem;
+      padding: 14px 32px;
+      border-radius: 999px;
+      background: #fff;
+      color: var(--accent);
+      border: 2px solid var(--accent2);
+      font-weight: 700;
+      box-shadow: 0 2px 8px #ffd6e2;
+      cursor: pointer;
+      position: relative;
+      transition: background 0.2s, transform 0.2s;
+    }
+    .reject-btn:hover {
+      background: #ffe6ec;
+      color: #ff6b88;
+      transform: scale(1.07);
     }
     @keyframes fadeInCard {
       from { opacity: 0; transform: scale(.96); }
@@ -253,7 +301,14 @@
 <body>
   <!-- Animated apology message (hidden by default) -->
   <div id="apologyMessage" class="apology-message">
-    I know I’ve made mistakes, and I’m truly sorry. If everything had been okay, we’d be celebrating 7 years together—but I still want to celebrate us, even a little. Because even in this difficult phase, we’re still holding on and trying to fix things. I want a new beginning with you. I love you, and I want us to move forward together.
+    <div>
+      I know I’ve made mistakes, and I’m truly sorry. If everything had been okay, we’d be celebrating 7 years together—but I still want to celebrate us, even a little. Because even in this difficult phase, we’re still holding on and trying to fix things. I want a new beginning with you. I love you, and I want us to move forward together.
+    </div>
+    <div class="msg-buttons">
+      <button id="celebrateBtn" class="celebrate-btn">Celebrate</button>
+      <button id="rejectMsgBtn" class="reject-btn">Reject</button>
+    </div>
+    <div class="tiny">(Try to click Reject — it's still shy 😉)</div>
   </div>
   <!-- Big romantic animation overlay -->
   <div class="big-romantic-animation">
@@ -299,6 +354,41 @@
   </div>
 
   <script>
+    // Celebrate/Reject logic for apology message
+    const celebrateBtn = document.getElementById('celebrateBtn');
+    const rejectMsgBtn = document.getElementById('rejectMsgBtn');
+    if (rejectMsgBtn) {
+      function moveRejectMsgRandomly() {
+        const areaRect = rejectMsgBtn.parentElement.getBoundingClientRect();
+        const btnRect = rejectMsgBtn.getBoundingClientRect();
+        const padding = 8;
+        const maxX = Math.max(0, areaRect.width - btnRect.width - padding);
+        const maxY = Math.max(0, areaRect.height - btnRect.height - padding);
+        const x = Math.floor(Math.random() * maxX) + padding;
+        const y = Math.floor(Math.random() * maxY) + padding;
+        rejectMsgBtn.style.position = 'relative';
+        rejectMsgBtn.style.left = x + 'px';
+        rejectMsgBtn.style.top = y + 'px';
+      }
+      rejectMsgBtn.addEventListener('click', (e)=>{
+        e.preventDefault();
+        // transform into celebrate button
+        rejectMsgBtn.disabled = true;
+        rejectMsgBtn.innerText = 'Celebrate';
+        rejectMsgBtn.classList.remove('reject-btn');
+        rejectMsgBtn.classList.add('celebrate-btn');
+      });
+      document.addEventListener('mousemove', (e)=>{
+        const r = rejectMsgBtn.getBoundingClientRect();
+        const buffer = 80;
+        const dx = e.clientX - (r.left + r.width/2);
+        const dy = e.clientY - (r.top + r.height/2);
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        if (dist < buffer) {
+          moveRejectMsgRandomly();
+        }
+      });
+    }
     // Fun confetti when the button is clicked (tiny, no external libs)
     document.querySelector('.heart').addEventListener('click', function (e) {
       e.preventDefault();
