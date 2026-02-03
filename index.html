@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>For you ❤️</title>
+  <style>
+    :root{--bg:#fff6f8;--card:#fff;--accent:#ff6b88;--text:#2b1f22}
+    html,body{height:100%}
+    body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;background:linear-gradient(180deg,var(--bg),#fff);color:var(--text)}
+    .card{max-width:720px;padding:36px;border-radius:16px;background:var(--card);box-shadow:0 12px 40px rgba(43,31,34,.08);text-align:center}
+    h1{margin:0 0 6px;font-size:40px;line-height:1}
+    p.lead{margin:8px 0 18px;font-size:18px;color:#4b3d40}
+    .heart{display:inline-block;font-size:22px;padding:8px 14px;border-radius:999px;background:linear-gradient(90deg,#ff9eb2,#ff6b88);color:white;text-decoration:none}
+    footer{margin-top:18px;font-size:13px;color:#7b6a6d}
+    .signature{margin-top:14px;font-weight:600;color:#4b3d40}
+    @media (max-width:520px){.card{padding:22px}h1{font-size:28px}}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Hey, beautiful ❤️</h1>
+    <p class="lead">I made this little page just for you — a tiny surprise to brighten your day.</p>
+
+    <div>
+      <a class="heart" href="#" onclick="alert('I love you 💖')">Open this</a>
+    </div>
+
+    <p class="signature">— From me</p>
+
+    <footer>
+      <small>Tip: If you'd like a custom message or photo here, tell me what to put and I can update it.</small>
+      <div style="margin-top:8px;color:#bb5b73;font-weight:600">gudo applogie</div>
+    </footer>
+  </div>
+
+  <script>
+    // Fun confetti when the button is clicked (tiny, no external libs)
+    document.querySelector('.heart').addEventListener('click', function (e) {
+      e.preventDefault();
+      // small confetti burst
+      for (let i=0;i<18;i++){
+        const s=document.createElement('div');
+        s.style.position='fixed';
+        s.style.left=(50+Math.random()*20-10)+'%';
+        s.style.top=(40+Math.random()*20-10)+'%';
+        s.style.width='8px';s.style.height='8px';s.style.borderRadius='2px';
+        s.style.background=['#ff6b88','#ffd166','#9be7ff'][Math.floor(Math.random()*3)];
+        s.style.opacity='0.95';
+        s.style.transform='translate(-50%,-50%) rotate('+Math.random()*360+'deg)';
+        s.style.transition='transform 900ms cubic-bezier(.2,.8,.2,1),opacity 900ms';
+        document.body.appendChild(s);
+        requestAnimationFrame(()=>{
+          s.style.transform='translate('+((Math.random()-0.5)*120)+'px,'+(-250-Math.random()*200)+'px) rotate('+Math.random()*720+'deg)';
+          s.style.opacity='0';
+        });
+        setTimeout(()=>s.remove(),1000+Math.random()*300);
+      }
+      setTimeout(()=>alert('You are my favorite 💕'),600);
+    });
+  </script>
+</body>
+</html>
