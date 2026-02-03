@@ -32,6 +32,16 @@
       <small>Tip: If you'd like a custom message or photo here, tell me what to put and I can update it.</small>
       <div style="margin-top:8px;color:#bb5b73;font-weight:600">gudo applogie</div>
     </footer>
+      <section class="apology" aria-labelledby="apology-heading">
+        <h2 id="apology-heading">Please, I am sorry</h2>
+        <p>Please apologise for whatever I did wrong and hurt you. I never meant to cause you pain — please forgive me.</p>
+
+        <div class="choices" id="choiceArea">
+          <button id="acceptBtn" class="btn btn-accept">Accept Apologies</button>
+          <button id="rejectBtn" class="btn btn-reject" aria-label="Reject">Reject</button>
+        </div>
+        <p class="tiny">(Try to click Reject — it's shy 😉)</p>
+      </section>
   </div>
 
   <script>
@@ -58,6 +68,80 @@
       }
       setTimeout(()=>alert('You are my favorite 💕'),600);
     });
+      // Apology interaction: a highlighted apology with Accept and Reject buttons.
+      // The Reject button dodges the cursor and, if clicked, turns into Accept.
+      const acceptBtn = document.getElementById('acceptBtn');
+      const rejectBtn = document.getElementById('rejectBtn');
+      const choiceArea = document.getElementById('choiceArea');
+
+      function smallConfettiBurst(centerX, centerY) {
+        for (let i=0;i<20;i++){
+          const s=document.createElement('div');
+          s.style.position='fixed';
+          const cx = (centerX!==undefined)?centerX:50; // percent fallback
+          const cy = (centerY!==undefined)?centerY:45;
+          s.style.left=(cx+Math.random()*12-6)+'%';
+          s.style.top=(cy+Math.random()*12-6)+'%';
+          s.style.width='8px';s.style.height='8px';s.style.borderRadius='2px';
+          s.style.background=['#ff6b88','#ffd166','#9be7ff'][Math.floor(Math.random()*3)];
+          s.style.opacity='0.95';
+          s.style.transform='translate(-50%,-50%) rotate('+Math.random()*360+'deg)';
+          s.style.transition='transform 900ms cubic-bezier(.2,.8,.2,1),opacity 900ms';
+          document.body.appendChild(s);
+          requestAnimationFrame(()=>{
+            s.style.transform='translate('+((Math.random()-0.5)*160)+'px,'+(-200-Math.random()*200)+'px) rotate('+Math.random()*720+'deg)';
+            s.style.opacity='0';
+          });
+          setTimeout(()=>s.remove(),1100+Math.random()*400);
+        }
+      }
+
+      // Accept button behavior
+      acceptBtn.addEventListener('click', ()=>{
+        smallConfettiBurst();
+        setTimeout(()=>alert('Thank you ❤️ I promise to be better.'),400);
+      });
+
+      // Reject: make it dodge the cursor when the pointer gets close
+      function moveRejectRandomly() {
+        const areaRect = choiceArea.getBoundingClientRect();
+        const btnRect = rejectBtn.getBoundingClientRect();
+        const padding = 8;
+        const maxX = Math.max(0, areaRect.width - btnRect.width - padding);
+        const maxY = Math.max(0, areaRect.height - btnRect.height - padding);
+        // choose a random position within the area
+        const x = Math.floor(Math.random() * maxX) + padding;
+        const y = Math.floor(Math.random() * maxY) + padding;
+        rejectBtn.style.position = 'relative';
+        rejectBtn.style.left = x + 'px';
+        rejectBtn.style.top = y + 'px';
+      }
+
+      // If user tries to click reject, convert to accept
+      rejectBtn.addEventListener('click', (e)=>{
+        e.preventDefault();
+        // transform into accept button
+        rejectBtn.disabled = true;
+        rejectBtn.innerText = 'Accept Apologies';
+        rejectBtn.classList.remove('btn-reject');
+        rejectBtn.classList.add('btn-accept');
+        // trigger accept behavior
+        smallConfettiBurst();
+        setTimeout(()=>alert('I knew you would accept ❤️ I love you.'),400);
+      });
+
+      // Make the reject button dodge when the pointer comes close
+      document.addEventListener('mousemove', (e)=>{
+        const r = rejectBtn.getBoundingClientRect();
+        const buffer = 80; // px distance to start dodging
+        const dx = e.clientX - (r.left + r.width/2);
+        const dy = e.clientY - (r.top + r.height/2);
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        if (dist < buffer) {
+          // move it to a new place within choices area
+          moveRejectRandomly();
+        }
+      });
   </script>
 </body>
 </html>
