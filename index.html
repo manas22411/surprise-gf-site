@@ -5,6 +5,31 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>For you ❤️</title>
   <style>
+    /* Animated apology message */
+    .apology-message {
+      display: none;
+      position: fixed;
+      left: 50%; top: 54%;
+      transform: translate(-50%,-50%) scale(0.96);
+      background: linear-gradient(120deg, #fff6f8 60%, #ffe6ec 100%);
+      color: #2b1f22;
+      border-radius: 18px;
+      box-shadow: 0 8px 32px rgba(255, 107, 136, 0.13);
+      padding: 32px 28px;
+      max-width: 480px;
+      width: 90vw;
+      font-size: 1.15rem;
+      font-weight: 500;
+      text-align: center;
+      z-index: 200;
+      opacity: 0;
+      animation: fadeInApology 1.2s cubic-bezier(.2,.8,.2,1) forwards;
+    }
+    @keyframes fadeInApology {
+      0% { opacity: 0; transform: translate(-50%,-50%) scale(0.96); }
+      60% { opacity: 1; transform: translate(-50%,-50%) scale(1.04); }
+      100% { opacity: 1; transform: translate(-50%,-50%) scale(1); }
+    }
     /* Big romantic animation styles */
     .big-romantic-animation {
       position: fixed;
@@ -226,6 +251,10 @@
   </style>
 </head>
 <body>
+  <!-- Animated apology message (hidden by default) -->
+  <div id="apologyMessage" class="apology-message">
+    I know I’ve made mistakes, and I’m truly sorry. If everything had been okay, we’d be celebrating 7 years together—but I still want to celebrate us, even a little. Because even in this difficult phase, we’re still holding on and trying to fix things. I want a new beginning with you. I love you, and I want us to move forward together.
+  </div>
   <!-- Big romantic animation overlay -->
   <div class="big-romantic-animation">
     <div class="big-heart">❤️</div>
@@ -324,7 +353,14 @@
       // Accept button behavior
       acceptBtn.addEventListener('click', ()=>{
         smallConfettiBurst();
-        setTimeout(()=>alert('Thank you ❤️ I promise to be better.'),400);
+        // Show animated apology message
+        setTimeout(()=>{
+          const msg = document.getElementById('apologyMessage');
+          msg.style.display = 'block';
+          msg.style.opacity = '0';
+          // Trigger animation
+          setTimeout(()=>{ msg.style.opacity = '1'; }, 50);
+        }, 400);
       });
 
       // Reject: make it dodge the cursor when the pointer gets close
