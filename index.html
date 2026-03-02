@@ -3,14 +3,13 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>For you ❤️</title>
+  <title>For you Only ❤️</title>
 
   <style>
     :root{
       --bg1:#fff6f8;
       --bg2:#ffe6ec;
       --card:#ffffffcc;
-      --cardSolid:#fff;
       --text:#2b1f22;
       --muted:#5b4a4e;
       --accent:#ff4d7d;
@@ -23,8 +22,8 @@
       --ring: 0 0 0 4px rgba(255, 77, 125, 0.18);
       --radius: 22px;
 
-      /* ✅ sticky bottom bar height */
-      --barH: 74px;
+      /* card vertical margin from viewport */
+      --vhPad: 18px;
     }
 
     *{ box-sizing:border-box; }
@@ -35,13 +34,17 @@
       font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
       background: var(--grad);
       color:var(--text);
+
+      /* ✅ IMPORTANT: don't vertically center on mobile; centering breaks scroll layouts */
       display:flex;
       align-items:center;
       justify-content:center;
+
       padding: 24px 14px;
       overflow-x:hidden;
     }
 
+    /* Soft animated background blobs */
     .bg{
       position:fixed;
       inset:0;
@@ -71,28 +74,27 @@
       z-index:1;
     }
 
+    /* ✅ Make card a stable viewport-height panel so inner scroll works */
     .card{
       background: var(--card);
       border: 1px solid rgba(255, 154, 178, 0.35);
       box-shadow: var(--shadow);
       backdrop-filter: blur(10px);
       border-radius: var(--radius);
-      padding: 26px 18px 18px;
+      padding: 18px 16px;
       position:relative;
-      overflow: hidden;
-      animation: popIn 800ms cubic-bezier(.2,.9,.2,1);
 
-      max-height: calc(100dvh - 28px);
-    }
+      /* ✅ critical: DO NOT hide overflow (it breaks scrolling perception) */
+      overflow: visible;
 
-    @keyframes popIn{
-      from{ opacity:0; transform: translateY(10px) scale(0.98); }
-      to{ opacity:1; transform: translateY(0) scale(1); }
+      /* ✅ force a real height on mobile */
+      height: calc(100dvh - (var(--vhPad) * 2));
+      max-height: calc(100dvh - (var(--vhPad) * 2));
     }
 
     .title{
       margin: 0 0 10px;
-      font-size: clamp(1.6rem, 4vw, 2.35rem);
+      font-size: clamp(1.55rem, 4vw, 2.25rem);
       color: var(--accent);
       letter-spacing: 0.01em;
       text-shadow: 0 10px 30px rgba(255,77,125,0.18);
@@ -101,10 +103,10 @@
 
     .lead{
       margin: 0;
-      max-width: 760px;
-      font-size: clamp(1.02rem, 2.2vw, 1.12rem);
       color: var(--muted);
-      line-height:1.55;
+      line-height: 1.55;
+      font-size: 1.08rem;
+      white-space: pre-line;
     }
 
     .btn{
@@ -118,6 +120,7 @@
       box-shadow: 0 10px 20px rgba(255,77,125,0.14);
       user-select:none;
     }
+    .btn:focus{ outline:none; box-shadow: var(--shadow2), var(--ring); }
     .btn:hover{ transform: translateY(-1px) scale(1.02); }
     .btn:active{ transform: translateY(0) scale(0.99); }
 
@@ -126,51 +129,66 @@
       color: #fff;
     }
 
-    .page{
+    /* ✅ Page layouts */
+    .page-center{
+      height: 100%;
       display:flex;
       flex-direction: column;
-      height: 100%;
-      min-height: 260px;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      text-align:center;
     }
 
-    /* ✅ Scrollable message body with bottom padding */
-    .scroll-area{
+    /* ✅ Message page: header + SCROLL BOX + footer button */
+    .message-layout{
+      height: 100%;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      gap: 12px;
+    }
+
+    /* ✅ Scroll box is ONLY the message area */
+    .message-box{
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.60);
+      border: 1px solid rgba(255, 154, 178, 0.25);
       padding: 14px 12px;
 
-      /* ✅ this prevents overlap with sticky button */
-      padding-bottom: calc(14px + var(--barH) + env(safe-area-inset-bottom));
-
-      border-radius: 14px;
-      background: rgba(255,255,255,0.55);
-      border: 1px solid rgba(255, 154, 178, 0.25);
-      white-space: pre-line;
-      flex: 1;
-      min-height: 120px;
+      /* ✅ ensures it can shrink + scroll inside grid */
+      min-height: 0;
     }
 
-    /* ✅ Sticky actions bar (fixed height) */
-    .actions-bar{
-      position: sticky;
-      bottom: 0;
-      min-height: var(--barH);
+    .footer-actions{
       display:flex;
-      align-items:center;
       justify-content:center;
-
-      padding: 12px 0 calc(12px + env(safe-area-inset-bottom));
-      margin-top: 12px;
-
-      background: linear-gradient(to top, rgba(255,246,248,0.98), rgba(255,246,248,0));
-      z-index: 10;
+      padding-bottom: env(safe-area-inset-bottom);
     }
 
+    /* Video page center */
+    .video-layout{
+      height: 100%;
+      display:flex;
+      flex-direction: column;
+      align-items:center;
+      justify-content:flex-start;
+      gap: 14px;
+      text-align:center;
+    }
+
+    /* Mobile-specific: stop vertical centering of whole body to avoid viewport bugs */
     @media (max-width: 520px){
-      body{ padding: 14px 12px; }
+      body{
+        align-items: flex-start;
+        justify-content: center;
+        padding: 12px 10px;
+      }
+      :root{ --vhPad: 12px; }
       .wrap{ width: min(980px, 96vw); }
-      .card{ padding: 18px 14px 14px; }
-      :root{ --barH: 78px; } /* a bit more on small screens */
+      .card{ padding: 16px 14px; }
+      .lead{ font-size: 1.04rem; }
     }
   </style>
 </head>
@@ -182,21 +200,22 @@
   </div>
 
   <main class="wrap">
+    <!-- PAGE 1 -->
     <section class="card" id="firstPage">
-      <div class="page" style="text-align:center;">
+      <div class="page-center">
         <h1 class="title">My last message</h1>
-        <div style="flex:1;"></div>
-        <div class="actions-bar" style="position:static; background:none; padding:0; margin-top:22px; min-height:auto;">
-          <button class="btn btn-primary" id="showMessageBtn" type="button">Read it 💌</button>
-        </div>
+        <button class="btn btn-primary" id="showMessageBtn" type="button">Read it 💌</button>
       </div>
     </section>
 
+    <!-- PAGE 2 -->
     <section class="card" id="messagePage" style="display:none;">
-      <div class="page">
+      <div class="message-layout">
         <h2 class="title">For you, always</h2>
 
-        <div class="scroll-area lead" id="messageScroll">
+        <!-- ✅ THIS scrolls -->
+        <div class="message-box" id="messageBox">
+          <div class="lead">
 I’m not moving on. I’m not letting you go.
 I’m only stopping because I can’t bear to hurt you anymore—not because my heart has let you go.
 If you ever reach out, I’ll come running to you, faster than ever.
@@ -208,25 +227,26 @@ I want you deeply, but sometimes it hurts more because everything I do keeps me 
 Just know this: even if I move on, even if life takes me elsewhere, you’ll always have a space in my heart.
 Sometimes, I share an Instagram post on WhatsApp that feels like it’s written for me, for us—but it’s already too late now, gudiaa, meri jaan, meri bhau.
 I love you in ways I can’t even describe, and maybe that doesn’t change anything, but I’ve realized it’s already too late.
+          </div>
         </div>
 
-        <div class="actions-bar">
+        <!-- ✅ Button is below, OUTSIDE scroll area -->
+        <div class="footer-actions">
           <button class="btn btn-primary" id="showVideoBtn" type="button">Show Video 🎥</button>
         </div>
       </div>
     </section>
 
-    <section class="card" id="videoPage" style="display:none; text-align:center;">
-      <div class="page" style="text-align:center;">
+    <!-- PAGE 3 -->
+    <section class="card" id="videoPage" style="display:none;">
+      <div class="video-layout">
         <h2 class="title">A special moment for us</h2>
 
-        <div style="flex:1; display:flex; align-items:center; justify-content:center;">
-          <video id="finalVideo" width="100%" controls
-                 style="border-radius:14px;box-shadow:0 14px 26px rgba(0,0,0,0.12);max-width:520px;background:#000;">
-            <source src="video/data_memories.mp4" type="video/mp4">
-            Your browser does not support the video tag.
-          </video>
-        </div>
+        <video id="finalVideo" width="100%" controls
+               style="border-radius:14px;box-shadow:0 14px 26px rgba(0,0,0,0.12);max-width:520px;background:#000;">
+          <source src="video/data_memories.mp4" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
       </div>
     </section>
   </main>
@@ -238,12 +258,16 @@ I love you in ways I can’t even describe, and maybe that doesn’t change anyt
     const showMessageBtn = document.getElementById('showMessageBtn');
     const showVideoBtn = document.getElementById('showVideoBtn');
     const finalVideo = document.getElementById('finalVideo');
-    const messageScroll = document.getElementById('messageScroll');
+    const messageBox = document.getElementById('messageBox');
 
     showMessageBtn.addEventListener('click', () => {
       firstPage.style.display = 'none';
       messagePage.style.display = 'block';
-      if (messageScroll) messageScroll.scrollTop = 0;
+
+      // ✅ make sure message box starts from top
+      if (messageBox) messageBox.scrollTop = 0;
+
+      // ✅ bring page into view (helps in some mobile webviews)
       messagePage.scrollIntoView({ block: "start" });
     });
 
