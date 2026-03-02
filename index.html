@@ -22,6 +22,9 @@
       --btnGrad: linear-gradient(90deg, var(--accent) 0%, var(--accent2) 100%);
       --ring: 0 0 0 4px rgba(255, 77, 125, 0.18);
       --radius: 22px;
+
+      /* ✅ sticky bottom bar height */
+      --barH: 74px;
     }
 
     *{ box-sizing:border-box; }
@@ -39,7 +42,6 @@
       overflow-x:hidden;
     }
 
-    /* Soft animated background blobs */
     .bg{
       position:fixed;
       inset:0;
@@ -69,10 +71,6 @@
       z-index:1;
     }
 
-    /* ✅ CRITICAL FIX:
-       We do NOT clip content anymore.
-       We create an internal layout: header + scroll body + sticky actions
-    */
     .card{
       background: var(--card);
       border: 1px solid rgba(255, 154, 178, 0.35);
@@ -84,7 +82,6 @@
       overflow: hidden;
       animation: popIn 800ms cubic-bezier(.2,.9,.2,1);
 
-      /* ✅ card never exceeds viewport on mobile */
       max-height: calc(100dvh - 28px);
     }
 
@@ -121,7 +118,6 @@
       box-shadow: 0 10px 20px rgba(255,77,125,0.14);
       user-select:none;
     }
-    .btn:focus{ outline:none; box-shadow: var(--shadow2), var(--ring); }
     .btn:hover{ transform: translateY(-1px) scale(1.02); }
     .btn:active{ transform: translateY(0) scale(0.99); }
 
@@ -130,14 +126,6 @@
       color: #fff;
     }
 
-    .btn-ghost{
-      background: #fff;
-      color: var(--accent);
-      border: 1.5px solid rgba(255, 154, 178, 0.65);
-      box-shadow: 0 10px 18px rgba(0,0,0,0.06);
-    }
-
-    /* ✅ NEW: internal page layout helper */
     .page{
       display:flex;
       flex-direction: column;
@@ -145,42 +133,44 @@
       min-height: 260px;
     }
 
-    /* ✅ NEW: scroll area for long text */
+    /* ✅ Scrollable message body with bottom padding */
     .scroll-area{
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
       padding: 14px 12px;
+
+      /* ✅ this prevents overlap with sticky button */
+      padding-bottom: calc(14px + var(--barH) + env(safe-area-inset-bottom));
+
       border-radius: 14px;
       background: rgba(255,255,255,0.55);
       border: 1px solid rgba(255, 154, 178, 0.25);
-
-      /* ✅ preserve line breaks */
       white-space: pre-line;
-
-      /* ✅ IMPORTANT: take remaining height */
       flex: 1;
       min-height: 120px;
     }
 
-    /* ✅ NEW: always-visible bottom action bar */
+    /* ✅ Sticky actions bar (fixed height) */
     .actions-bar{
       position: sticky;
       bottom: 0;
-      padding: 12px 0 calc(12px + env(safe-area-inset-bottom));
-      margin-top: 12px;
+      min-height: var(--barH);
       display:flex;
+      align-items:center;
       justify-content:center;
 
-      /* gradient so it looks nice above text */
-      background: linear-gradient(to top, rgba(255,246,248,0.95), rgba(255,246,248,0));
+      padding: 12px 0 calc(12px + env(safe-area-inset-bottom));
+      margin-top: 12px;
+
+      background: linear-gradient(to top, rgba(255,246,248,0.98), rgba(255,246,248,0));
       z-index: 10;
     }
 
-    /* Mobile spacing */
     @media (max-width: 520px){
       body{ padding: 14px 12px; }
       .wrap{ width: min(980px, 96vw); }
       .card{ padding: 18px 14px 14px; }
+      :root{ --barH: 78px; } /* a bit more on small screens */
     }
   </style>
 </head>
@@ -191,29 +181,21 @@
     <div class="blob b2"></div>
   </div>
 
-  <!-- Big romantic overlay (optional visual) -->
-  <div id="romance" class="romance" aria-hidden="true" style="display:none;"></div>
-
   <main class="wrap">
-    <!-- PAGE 1 -->
     <section class="card" id="firstPage">
       <div class="page" style="text-align:center;">
         <h1 class="title">My last message</h1>
-
         <div style="flex:1;"></div>
-
-        <div class="actions-bar" style="position:static; background:none; padding:0; margin-top:22px;">
+        <div class="actions-bar" style="position:static; background:none; padding:0; margin-top:22px; min-height:auto;">
           <button class="btn btn-primary" id="showMessageBtn" type="button">Read it 💌</button>
         </div>
       </div>
     </section>
 
-    <!-- PAGE 2 (MESSAGE) -->
     <section class="card" id="messagePage" style="display:none;">
       <div class="page">
         <h2 class="title">For you, always</h2>
 
-        <!-- ✅ Scrollable message -->
         <div class="scroll-area lead" id="messageScroll">
 I’m not moving on. I’m not letting you go.
 I’m only stopping because I can’t bear to hurt you anymore—not because my heart has let you go.
@@ -228,14 +210,12 @@ Sometimes, I share an Instagram post on WhatsApp that feels like it’s written 
 I love you in ways I can’t even describe, and maybe that doesn’t change anything, but I’ve realized it’s already too late.
         </div>
 
-        <!-- ✅ Sticky bottom button -->
         <div class="actions-bar">
           <button class="btn btn-primary" id="showVideoBtn" type="button">Show Video 🎥</button>
         </div>
       </div>
     </section>
 
-    <!-- PAGE 3 (VIDEO) -->
     <section class="card" id="videoPage" style="display:none; text-align:center;">
       <div class="page" style="text-align:center;">
         <h2 class="title">A special moment for us</h2>
@@ -263,18 +243,13 @@ I love you in ways I can’t even describe, and maybe that doesn’t change anyt
     showMessageBtn.addEventListener('click', () => {
       firstPage.style.display = 'none';
       messagePage.style.display = 'block';
-
-      // ✅ Ensure message starts at top (important on mobile)
       if (messageScroll) messageScroll.scrollTop = 0;
-
-      // ✅ Also ensure card itself is at top (safety)
       messagePage.scrollIntoView({ block: "start" });
     });
 
     showVideoBtn.addEventListener('click', () => {
       messagePage.style.display = 'none';
       videoPage.style.display = 'block';
-
       if (finalVideo) {
         finalVideo.currentTime = 0;
         finalVideo.play().catch(()=>{});
